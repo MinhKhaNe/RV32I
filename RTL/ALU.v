@@ -3,7 +3,7 @@ module ALU(
     input   wire    [31:0]  B,      //Operand 2
     input   wire    [3:0]   ALUControl,  //From ALU control
     
-    output  wire    [31:0]  ALU_result,
+    output  reg     [31:0]  ALU_result,
     output  wire            ZERO
 );
 

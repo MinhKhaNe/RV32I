@@ -1,0 +1,3 @@
++incdir+../RTL
+
+../RTL/*.v

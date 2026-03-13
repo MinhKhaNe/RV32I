@@ -13,6 +13,7 @@ module Register_file(
 );
 
     reg [31:0]  in_registers    [0:31];     //32 Registers with Width of 32-bits
+    integer i;
 
     always @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
