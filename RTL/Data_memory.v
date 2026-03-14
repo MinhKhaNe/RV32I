@@ -9,6 +9,13 @@ module Data_memory(
 );
 
     reg [31:0] mem [0:1023];
+    
+    integer i;
+
+    initial begin
+        for(i = 0; i < 1024; i = i + 1)
+            mem[i] = 32'h0;
+    end
 
     always @(posedge clk) begin
         if (MemWrite)

@@ -28,7 +28,12 @@ module Register_file(
         end
     end
 
-    assign  rv1 = (rs1 == 5'b00000) ? 32'b0 : in_registers[rs1];
-    assign  rv2 = (rs2 == 5'b00000) ? 32'b0 : in_registers[rs2];
+    assign rv1 = (rs1 == 5'b0)          ?   32'b0 : 
+                 ((rs1 == rd) && en)    ?   wd : 
+                                            in_registers[rs1];
+                 
+    assign rv2 = (rs2 == 5'b0)          ?   32'b0 : 
+                 ((rs2 == rd) && en)    ?   wd : 
+                                            in_registers[rs2];
 
 endmodule

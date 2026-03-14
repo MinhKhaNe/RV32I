@@ -23,7 +23,7 @@ module ALU(
             4'b1011:    ALU_result  = $signed(A) >> B[4:0];         //Shift Right Arithmetic
             4'b1100:    ALU_result  = (A == B);                     //Equal
             4'b1101:    ALU_result  = (A != B);                     //Not equal
-            //4'b1110:    ALU_result  = A + B;  //PC_plus
+            4'b1110:    ALU_result  = A + B;                        //PC_plus
             default:    ALU_result  = 32'b0;
         endcase
     end

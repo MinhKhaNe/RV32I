@@ -1,6 +1,7 @@
 module PC(
     input   wire            clk,
     input   wire            rst_n,
+    input   wire            Stall,
 
     input   wire            Branch,
     input   wire            Pcsrc,
@@ -36,7 +37,7 @@ module PC(
     always @(posedge clk or negedge rst_n) begin
         if(!rst_n)
             pc_reg <= 32'h0;
-        else
+        else if(~Stall)
             pc_reg <= next_pc;
     end
 
