@@ -225,7 +225,6 @@ module rv32i_top(
         end
     end
 
-
     //Register File
     Register_file RF0 (.clk(clk), .rst_n(rst_n), .en(MEM_WB_RegWrite), .rs1(IF_ID_Instruction[19:15]), .rs2(IF_ID_Instruction[24:20]), .rd(MEM_WB_rd), .wd(write_data), .rv1(operand_1), .rv2(operand_2));
 
