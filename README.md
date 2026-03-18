@@ -1,7 +1,13 @@
 # RV32I
 Pipeline RISC_V 32-bits Integer
 
-# References
+## Overview
+
+## Tools
+- Questa Sim-64 2021.2-1
+- VS Code
+
+## References
 [1] N. Nauman Khan, “Designing the Control Unit and ALU Control Unit of RV32I,” Medium.
 [Online]. Available: https://medium.com/@nehanaumankhan/designing-the-control-unit-and-alu-control-unit-of-rv32i-a1ed38207ac5
 
@@ -13,7 +19,3 @@ Pipeline RISC_V 32-bits Integer
 
 [4] “RISC-V 32I Design CPU,” Reddit.
 [Online]. Available: https://www.reddit.com/r/RISCV/comments/1n6nt6x/riscv_32i_design_cpu/
-
-# Tools
-- Questa Sim-64 2021.2-1
-- VS Code
