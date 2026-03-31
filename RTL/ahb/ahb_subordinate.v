@@ -2,78 +2,67 @@ module ahb_subordinate(
     //Global signals
     input   wire            HCLK,
     input   wire            HRESETn,
-    //Subordinate signals
+    //Select signal
+    input   wire            HSEL,
+    //Data in
     input   wire    [31:0]  HWDATA,
+    //Address and control
     input   wire    [31:0]  HADDR,
-    input   wire    [1:0]   HTRANS,
-    input   wire            HWRITE,
+    input   wire    [1:0]   HTRANS,     //00 idle, 01 BUSY, 10 NONSEQ, 11 SEQ
+    input   wire            HWRITE,     //1 WRITE, 0 READ
     input   wire    [2:0]   HSIZE,      //000: 8 bit, 001: 16 bit, 010: 32 bit
     input   wire    [2:0]   HBURST,
-    input   wire            HSEL,
+    input   wire            HMASTLOCK,
     input   wire            HREADY,
-
-    output  wire            HREADYOUT,
-    output  wire            HRESP,      //WARINING
+    input   wire    [2:0]   HPROT,
+    //Transfer response
+    output  wire            HREADYOUT,  //insert a single wait
+state
+    output  wire            HRESP,      //WARINING 
+    output  wire            HEXOKAY,
+    //Data out
     output  reg     [31:0]  HRDATA
 );
 
     integer         i;
-    wire            VALID;
-    wire    [3:0]   byte_en;
-    wire            align_error;
+    //Internal Registers
+    reg     [31:0]  HRDATA_reg, HADDR_reg;
+    reg             HWRITE_d;
+    reg     [1:0]   HTRANS_d;
+    reg     [31:0]  memory[0:1023];
 
-    reg     [31:0]  ADDR_reg;
-    reg             WRITE_reg,VALID_reg;
-    reg     [2:0]   HSIZE_reg;
-    reg     [31:0]  memory [0:1023];
-    
-    //HTRANS: 00: IDLE, 01: BUSY, 10: NONSEQ, 11: SEQ
-    
-    assign  VALID       = HSEL && HTRANS[1] && HREADY;
-    assign  HREADYOUT   = 1'b1;
-    assign  HRESP       = allign_error;
-    assign  byte_en     = (HSIZE_reg == 3'b010) ?   4'b1111 :
-                          (HSIZE_reg == 3'b000) ?   (4'b001 << ADDR_reg[1:0]) :
-                          (HSIZE_reg == 3'b001) ?   (ADDR_reg[1] ? 4'b1100: 4'b0011) :
-                                                    4'b000;
-
-    assign align_error =    (HSIZE == 3'b010 && HADDR[1:0] != 2'b00) ||
-                            (HSIZE == 3'b001 && HADDR[0]   != 1'b0);
-
+    //DELAY HWRITE 1 cycle
     always @(posedge HCLK or negedge HRESETn) begin
         if(!HRESETn) begin
-            ADDR_reg    <= 32'b0;
-            WRITE_reg   <= 1'b0;
-            VALID_reg   <= 1'b0;
-            HSIZE_reg   <= 3'b0;
+            HWRITE_d    <= 1'b0;
+            HADDR_reg   <= 32'b0;
         end
         else if(HREADY) begin
-            ADDR_reg    <= HADDR;
-            WRITE_reg   <= HWRITE;
-            VALID_reg   <= VALID;
-            HSIZE_reg   <= HSIZE;
+            HWRITE_d    <= HWRITE;
+            HADDR_reg   <= HADDR;
+            HTRANS_d    <= HTRANS;
         end
     end
 
-    //Delay 1 clk wait HWDATA
-    always @(posedge HCLK) begin
-        if(VALID_reg && WRITE_reg) begin
-            if(byte_en[0]) memory[ADDR_reg[31:2]][7:0]   <= HWDATA[7:0];
-            if(byte_en[1]) memory[ADDR_reg[31:2]][15:8]  <= HWDATA[15:8];
-            if(byte_en[2]) memory[ADDR_reg[31:2]][23:16] <= HWDATA[23:16];
-            if(byte_en[3]) memory[ADDR_reg[31:2]][31:24] <= HWDATA[31:24];
-        end
-    end
-
-    //READ
     always @(posedge HCLK or negedge HRESETn) begin
         if(!HRESETn) begin
-            HRDATA  <= 32'b0;
+            HRDATA_reg  <= 32'b0;
         end
-        else begin
-            if(VALID_reg && ~WRITE_reg) begin
-                HRDATA  <= memory[ADDR_reg[31:2]];
+        else if(!HWRITE_d && HREADY && HTRANS_d[1]) begin
+            HRDATA_reg  <= memory[HADDR_reg[11:2]];
+        end
+    end
+
+    assign  HRDATA  = HRDATA_reg;
+
+    always @(posedge HCLK or negedge HRESETn) begin
+        if(!HRESETn) begin
+            for(i = 0; i < 1024; i = i + 1) begin
+                memory[i] <= 0;
             end
+        end
+        else if(HWRITE_d && HREADY && HTRANS_d[1]) begin
+            memory[HADDR_reg[11:2]] <= HWDATA;
         end
     end
 

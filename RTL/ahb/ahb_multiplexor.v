@@ -3,10 +3,10 @@ module ahb_multiplexor(
     input   wire            HCLK,
     input   wire            HRESETn,
     //Multiplexor Signals
-    input   wire    [31:0]  HRDATA,
-    input   wire            HREADY,
-    input   wire            HRESP,
-    input   wire            HEXOKAY,
+    output  wire    [31:0]  HRDATA,
+    output  wire            HREADY,
+    output  wire            HRESP,
+    output  wire            HEXOKAY
 );
 
 
