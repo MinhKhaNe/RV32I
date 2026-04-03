@@ -50,12 +50,7 @@ module ahb_manager(
     wire    [1:0]   HTRANS_eff;
 
     assign  HWRITE          =   HWRITE_reg;
-    //assign  HWDATA         =   (HWRITE_REQ && HREADY) ? WDATA : 32'b0;
     assign  HWDATA          =   WDATA_reg;
-    // assign  HTRANS          =   (state == IDLE)     ? 2'b00 :
-    //                             //(state == BUSY)     ? 2'b01 :
-    //                             (state == NONSEQ)   ? 2'b10 :
-    //                                                   2'b11 ;
     assign  HADDR           =   HADDR_reg;
     assign  addr_next       =   HADDR_reg + step_size;
     assign  wrap_boundary   =   step_size * burst_size;
@@ -65,7 +60,7 @@ module ahb_manager(
     assign  HPROT           =   4'b0011; 
 
     assign  HTRANS          =   HTRANS_reg;
-    assign  HTRANS_eff      = (HREADY) ? HTRANS_next : HTRANS_reg;
+    assign  HTRANS_eff      =   (HREADY) ? HTRANS_next : HTRANS_reg;
 
     always @(*) begin
         case(HTRANS_reg)
@@ -87,10 +82,20 @@ module ahb_manager(
                     HTRANS_next = HVALID ? NONSEQ : IDLE;
             end
             BUSY: begin
-                if (HVALID)
-                    HTRANS_next = SEQ;
-                else
-                    HTRANS_next = BUSY;
+                if (HBURST_d == INCR) begin
+                    if (!HVALID)
+                        HTRANS_next = BUSY;
+                    // else if (HVALID && !HWRITE_REQ)
+                    //     HTRANS_next = NONSEQ; // new transfer
+                    else
+                        HTRANS_next = SEQ;    // continue burst
+                end
+                else begin
+                    if (HVALID)
+                        HTRANS_next = SEQ;
+                    else
+                        HTRANS_next = BUSY;
+                end
             end
             default: begin
                 HTRANS_next = IDLE;
@@ -105,6 +110,9 @@ module ahb_manager(
             if (HREADY) begin
                 HTRANS_reg <= HTRANS_next;
             end
+            else if (HBURST_d == INCR && HTRANS_reg == BUSY) begin
+                HTRANS_reg <= HTRANS_next;
+            end
             else if (HTRANS_reg == IDLE && HTRANS_next == NONSEQ) begin
                 HTRANS_reg <= NONSEQ;
             end
@@ -113,42 +121,6 @@ module ahb_manager(
             end
         end
     end
-
-    // always @(posedge HCLK or negedge HRESETn) begin
-    //     if(!HRESETn)
-    //         HTRANS_reg <= IDLE;
-    //     else begin
-    //         case(HTRANS_reg)
-    //             IDLE: begin
-    //                 if(HVALID)
-    //                     HTRANS_reg <= NONSEQ;
-    //             end
-
-    //             NONSEQ: begin
-    //                 if(HREADY) begin
-    //                     if(HBURST_d == SINGLE)
-    //                         HTRANS_reg <= (HVALID ? NONSEQ : IDLE);
-    //                     else
-    //                         HTRANS_reg <= SEQ;
-    //                 end
-    //             end
-
-    //             SEQ: begin
-    //                 if(HREADY) begin
-    //                     if(HBURST_d == INCR) begin
-    //                         HTRANS_reg <= (HVALID ? SEQ : IDLE);
-    //                     end
-    //                     else if(BURST_cnt > 0) begin
-    //                         HTRANS_reg <= SEQ;
-    //                     end
-    //                     else begin
-    //                         HTRANS_reg <= (HVALID ? NONSEQ : IDLE);
-    //                     end
-    //                 end
-    //             end
-    //         endcase
-    //     end
-    // end
 
     //Delay Wdata 1 cylce after HWRITE and HADDR
     always @(posedge HCLK or negedge HRESETn) begin
@@ -255,7 +227,12 @@ module ahb_manager(
             if (HREADY) begin
                 case (HTRANS_next)
                     NONSEQ: HADDR_reg <= HWADDR;
-                    SEQ:    HADDR_reg <= (HBURST_d[0]) ? addr_next : wrap_addr;
+                    SEQ: begin
+                        case(HBURST_d)
+                            WRAP4, WRAP8, WRAP16: HADDR_reg <= wrap_addr;
+                            default: HADDR_reg <= addr_next;
+                        endcase
+                    end                
                 endcase
             end
         end
