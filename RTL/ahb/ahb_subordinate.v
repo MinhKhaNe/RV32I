@@ -69,7 +69,7 @@ module ahb_subordinate(
         if(!HRESETn) begin
             HRDATA_reg  <= 32'b0;
         end
-        else if(!HWRITE && ~wait_state && HTRANS[1] && HSEL) begin
+        else if(!HWRITE && HREADY && HTRANS[1] && HSEL) begin
             HRDATA_reg  <= HRDATA_mask;
         end
     end
@@ -140,7 +140,7 @@ module ahb_subordinate(
         if(!HRESETn) begin
             wait_state  <= 1'b0;
         end
-        else if(HREADY && HSEL && HTRANS[1] && !wait_state) begin
+        else if(HREADY && HSEL && HTRANS_d[1] && !wait_state) begin
             wait_state  <= 1'b1;
         end
         else if (wait_state) begin
