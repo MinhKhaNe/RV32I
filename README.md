@@ -19,3 +19,6 @@ Pipeline RISC_V 32-bits Integer
 
 [4] “RISC-V 32I Design CPU,” Reddit.
 [Online]. Available: https://www.reddit.com/r/RISCV/comments/1n6nt6x/riscv_32i_design_cpu/
+
+## Address map
+https://docs.google.com/document/d/1q9mrBZyVUbFV0hl7iKb2ib7Q-zoSXlTsIKckU1ljhbs/edit?usp=sharing
