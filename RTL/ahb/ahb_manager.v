@@ -66,44 +66,46 @@ module ahb_manager(
         if (!HREADY) begin
             HTRANS_next = HTRANS_reg;  
         end
-        case(HTRANS_reg)
-            IDLE: begin
-                HTRANS_next = HVALID ? NONSEQ : IDLE;
-            end
-            NONSEQ: begin
-                HTRANS_next = (HBURST_d == SINGLE) ?
-                            (HVALID ? NONSEQ : IDLE) : SEQ;
-            end
-            SEQ: begin
-                if (!HVALID && (HBURST_d != SINGLE))
-                    HTRANS_next = BUSY;  
-                else if (HBURST_d == INCR)
-                    HTRANS_next = HVALID ? SEQ : IDLE;
-                else if (BURST_cnt > 0)
-                    HTRANS_next = SEQ;
-                else
+        else begin
+            case(HTRANS_reg)
+                IDLE: begin
                     HTRANS_next = HVALID ? NONSEQ : IDLE;
-            end
-            BUSY: begin
-                if (HBURST_d == INCR) begin
-                    if (!HVALID)
-                        HTRANS_next = BUSY;
-                    else if (HVALID && !HWRITE_REQ)
-                        HTRANS_next = NONSEQ; // new transfer
-                    else
-                        HTRANS_next = SEQ;    // continue burst
                 end
-                else begin
-                    if (HVALID)
+                NONSEQ: begin
+                    HTRANS_next = (HBURST_d == SINGLE) ?
+                                (HVALID ? NONSEQ : IDLE) : SEQ;
+                end
+                SEQ: begin
+                    if (!HVALID && (HBURST_d != SINGLE))
+                        HTRANS_next = BUSY;  
+                    else if (HBURST_d == INCR)
+                        HTRANS_next = HVALID ? SEQ : IDLE;
+                    else if (BURST_cnt > 0)
                         HTRANS_next = SEQ;
                     else
-                        HTRANS_next = BUSY;
+                        HTRANS_next = HVALID ? NONSEQ : IDLE;
                 end
-            end
-            default: begin
-                HTRANS_next = IDLE;
-            end
-        endcase
+                BUSY: begin
+                    if (HBURST_d == INCR) begin
+                        if (!HVALID)
+                            HTRANS_next = BUSY;
+                        else if (HVALID && !HWRITE_REQ)
+                            HTRANS_next = NONSEQ; // new transfer
+                        else
+                            HTRANS_next = SEQ;    // continue burst
+                    end
+                    else begin
+                        if (HVALID)
+                            HTRANS_next = SEQ;
+                        else
+                            HTRANS_next = BUSY;
+                    end
+                end
+                default: begin
+                    HTRANS_next = IDLE;
+                end
+            endcase
+        end
     end
 
     always @(posedge HCLK or negedge HRESETn) begin
