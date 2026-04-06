@@ -149,6 +149,6 @@ module ahb_subordinate(
     end
 
     assign HREADYOUT    = ~wait_state;
-    assign HRESP        = 1'b0; 
+    assign HRESP        = (HSEL && HTRANS[1] && (HADDR[31:12] != 0)) ? 1'b1 : 1'b0; 
 
 endmodule
