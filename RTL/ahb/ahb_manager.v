@@ -63,6 +63,9 @@ module ahb_manager(
     assign  HTRANS_eff      =   (HREADY) ? HTRANS_next : HTRANS_reg;
 
     always @(*) begin
+        if (!HREADY) begin
+            HTRANS_next = HTRANS_reg;  
+        end
         case(HTRANS_reg)
             IDLE: begin
                 HTRANS_next = HVALID ? NONSEQ : IDLE;
@@ -85,8 +88,8 @@ module ahb_manager(
                 if (HBURST_d == INCR) begin
                     if (!HVALID)
                         HTRANS_next = BUSY;
-                    // else if (HVALID && !HWRITE_REQ)
-                    //     HTRANS_next = NONSEQ; // new transfer
+                    else if (HVALID && !HWRITE_REQ)
+                        HTRANS_next = NONSEQ; // new transfer
                     else
                         HTRANS_next = SEQ;    // continue burst
                 end
@@ -127,7 +130,7 @@ module ahb_manager(
         if(!HRESETn) begin
             WDATA_reg_d   <= 32'b0;
         end
-        else if(HREADY) begin
+        else if(HREADY && HVALID && HWRITE_REQ) begin
         //else if(HREADY && HVALID && HWRITE_REQ) begin
             WDATA_reg_d   <= WDATA;
         end
@@ -206,9 +209,9 @@ module ahb_manager(
             case(HTRANS_reg)
                 NONSEQ: begin
                     if (HVALID) begin
-                        BURST_cnt <= (HBURST_REQ == INCR4)  ? 4'd3 : 
-                                    (HBURST_REQ == INCR8)  ? 4'd7 :
-                                    (HBURST_REQ == INCR16) ? 4'd15 : 0;
+                        BURST_cnt <= (HBURST_d == INCR4)  ? 4'd3 : 
+                                    (HBURST_d == INCR8)  ? 4'd7 :
+                                    (HBURST_d == INCR16) ? 4'd15 : 0;
                     end
                 end
                 SEQ: begin
@@ -227,13 +230,13 @@ module ahb_manager(
             if (HREADY) begin
                 case (HTRANS_next)
                     NONSEQ: HADDR_reg <= HWADDR;
-                    SEQ: begin
-                        case(HBURST_d)
-                            WRAP4, WRAP8, WRAP16: HADDR_reg <= wrap_addr;
-                            default: HADDR_reg <= addr_next;
-                        endcase
-                    end                
+                    SEQ:    HADDR_reg <= (HBURST_d[2:1] == 2'b01 || HBURST_d[2:1] == 2'b10 || HBURST_d[2:1] == 2'b11) ? wrap_addr : addr_next;
+                    IDLE:   HADDR_reg <= HWADDR;
+                    default: HADDR_reg <= HADDR_reg;
                 endcase
+            end
+            else if (HTRANS_reg == IDLE && HTRANS_next == NONSEQ) begin
+                HADDR_reg <= HWADDR;
             end
         end
     end
