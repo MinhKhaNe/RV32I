@@ -5,8 +5,9 @@ module ahb_decoder(
     //Control signals
     input   wire    [31:0]  HADDR,
     //Decoder signals
-    input   wire            HSELx
+    output  wire            HSELx
 );
 
+    
 
 endmodule

@@ -13,6 +13,9 @@ module ahb_manager(
     input   wire            LOCK_REQ,   //LOCK request from RISCV
     input   wire    [2:0]   HBURST_REQ,
     input   wire    [2:0]   HSIZE_REQ,
+    input   wire            CPU_PRIVILEGED, 
+    input   wire            CPU_DATA,
+    input   wire    [3:0]   CPU_HPROT,  //HPROT from CPU
     //Address and Control
     output  wire    [31:0]  HADDR,
     output  wire    [2:0]   HBURST,
@@ -42,7 +45,7 @@ module ahb_manager(
     reg     [1:0]   state;
     reg             HWRITE_reg, HWRITE_reg_d;
     reg             lock;
-    reg     [3:0]   burst_size, BURST_len, BURST_cnt;
+    reg     [3:0]   burst_size, BURST_len, BURST_cnt, hprot_reg;
     reg     [2:0]   HSIZE_d, HBURST_d;
     wire    [31:0]  addr_next, wrap_boundary, wrap_addr;
     reg     [31:0]  step_size;
@@ -57,13 +60,16 @@ module ahb_manager(
     assign  wrap_addr       =   {HADDR_reg & ~(wrap_boundary - 1)} | ((HADDR_reg + step_size) & (wrap_boundary - 1));
     assign  HBURST          =   HBURST_d;
     assign  HSIZE           =   HSIZE_d;
-    assign  HPROT           =   4'b0011; 
-
+    assign  HPROT           =   hprot_reg; 
+    // assign  HPROT           =   CPU_HPROT;
     assign  HTRANS          =   HTRANS_reg;
     assign  HTRANS_eff      =   (HREADY) ? HTRANS_next : HTRANS_reg;
 
     always @(*) begin
-        if (!HREADY) begin
+        if (HRESP) begin
+            HTRANS_next = IDLE;
+        end
+        else if (!HREADY) begin
             HTRANS_next = HTRANS_reg;  
         end
         else begin
@@ -112,6 +118,9 @@ module ahb_manager(
         if(!HRESETn)
             HTRANS_reg <= IDLE;
         else begin
+        if (HRESP) begin
+                HTRANS_reg <= IDLE;
+            end
             if (HREADY) begin
                 HTRANS_reg <= HTRANS_next;
             end
@@ -133,7 +142,6 @@ module ahb_manager(
             WDATA_reg_d   <= 32'b0;
         end
         else if(HREADY && HVALID && HWRITE_REQ) begin
-        //else if(HREADY && HVALID && HWRITE_REQ) begin
             WDATA_reg_d   <= WDATA;
         end
     end
@@ -144,6 +152,18 @@ module ahb_manager(
         end
         else if(HREADY) begin
             WDATA_reg   <= WDATA_reg_d;
+        end
+    end
+
+    always @(posedge HCLK or negedge HRESETn) begin
+        if(!HRESETn) begin
+            hprot_reg <= 4'b0011; 
+        end
+        else if(HREADY && HVALID) begin
+            hprot_reg <= {2'b00, CPU_PRIVILEGED, CPU_DATA};
+        end
+        else begin
+            hprot_reg <= 4'b0011;
         end
     end
 
@@ -206,6 +226,9 @@ module ahb_manager(
     always @(posedge HCLK or negedge HRESETn) begin
         if(!HRESETn) begin
             BURST_cnt <= 4'b0;
+        end
+        else if (HRESP) begin
+            BURST_cnt <= 4'b0; // Hủy burst hiện tại khi có lỗi
         end
         else if(HREADY) begin
             case(HTRANS_reg)

@@ -1,6 +1,16 @@
 module rv32i_top(
-    input   wire        clk,
-    input   wire        rst_n
+    input   wire            clk,
+    input   wire            rst_n,
+    input   wire    [31:0]  MEM_RDATA,
+    input   wire            MEM_READY,
+
+    output  wire            CPU_DATA,
+    output  wire            CPU_PRIVILEGED,
+    output  wire    [3:0]   HPROT,
+    output  wire    [31:0]  MEM_ADDR,
+    output  wire    [31:0]  MEM_WDATA,
+    output  wire            MEM_WRITE,
+    output  wire            MEM_READ
 );
     //Internal Registers and Wires
     wire    [31:0]  Instruction;
@@ -21,6 +31,7 @@ module rv32i_top(
     wire    [31:0]  pc_plus4;
     wire    [2:0]   imm_type;
     wire    [1:0]   ForwardA, ForwardB;
+    wire            bus_stall;
 
     //IF_ID
     wire            ID_Flush;
@@ -61,29 +72,41 @@ module rv32i_top(
     reg     [31:0]  MEM_WB_mem_data;
     reg     [31:0]  MEM_WB_ALU_result;
     wire    [31:0]  forwardA_data, forwardB_data;
+    wire            is_data_access, hazard_stall;
 
-    assign Flush         =  (Branch_taken);
-    assign forwardA_data =  (ForwardA == 2'b00) ?   ID_EX_rv1 :
-                            (ForwardA == 2'b10) ?   EX_MEM_ALU_result :
-                            (ForwardA == 2'b01) ?   write_data :
-                                                    ID_EX_rv1;
+    assign  is_data_access  =   (EX_MEM_Mem_Read || EX_MEM_Mem_Write);
+    assign  HPROT           =   {2'b00, 1'b1, is_data_access};
+    assign  Flush           =   (Branch_taken);
+    assign  forwardA_data   =   (ForwardA == 2'b00) ?   ID_EX_rv1 :
+                                (ForwardA == 2'b10) ?   EX_MEM_ALU_result :
+                                (ForwardA == 2'b01) ?   write_data :
+                                                        ID_EX_rv1;
                                                     
-    assign forwardB_data =  (ForwardB == 2'b00) ?   ID_EX_rv2 :
-                            (ForwardB == 2'b10) ?   EX_MEM_ALU_result :
-                            (ForwardB == 2'b01) ?   write_data :
-                                                    ID_EX_rv2;
+    assign  forwardB_data   =   (ForwardB == 2'b00) ?   ID_EX_rv2 :
+                                (ForwardB == 2'b10) ?   EX_MEM_ALU_result :
+                                (ForwardB == 2'b01) ?   write_data :
+                                                        ID_EX_rv2;
 
-    assign  pc_plus4    =   ID_EX_pc + 32'd4;
+    assign  pc_plus4        =   ID_EX_pc + 32'd4;
 
-    assign  write_data  =   (MEM_WB_Mem_To_Reg) ?   MEM_WB_mem_data :
-                            (MEM_WB_Jump)       ?   MEM_WB_pc_plus  :
-                            (MEM_WB_LUI)        ?   MEM_WB_imm      :
-                                                    MEM_WB_ALU_result;
+    assign  write_data      =   (MEM_WB_Mem_To_Reg) ?   MEM_WB_mem_data :
+                                (MEM_WB_Jump)       ?   MEM_WB_pc_plus  :
+                                (MEM_WB_LUI)        ?   MEM_WB_imm      :
+                                                        MEM_WB_ALU_result;
 
-    assign  ALU_A       =   (ID_EX_ALUSrc1)     ? ID_EX_pc : forwardA_data;
-    assign  ALU_B       =   (ID_EX_ALUSrc2)     ? ID_EX_imm : forwardB_data;
-    assign  opcode      =   IF_ID_Instruction[6:0];
-    assign  funct3      =   IF_ID_Instruction[14:12];
+    assign  ALU_A           =   (ID_EX_ALUSrc1)     ? ID_EX_pc : forwardA_data;
+    assign  ALU_B           =   (ID_EX_ALUSrc2)     ? ID_EX_imm : forwardB_data;
+    assign  opcode          =   IF_ID_Instruction[6:0];
+    assign  funct3          =   IF_ID_Instruction[14:12];
+    assign  CPU_PRIVILEGED  =   1'b1; 
+    assign  MEM_ADDR        =   EX_MEM_ALU_result;
+    assign  MEM_WDATA       =   EX_MEM_rv2;
+    assign  MEM_WRITE       =   EX_MEM_Mem_Write;
+    assign  MEM_READ        =   EX_MEM_Mem_Read;
+    assign  CPU_DATA        =   is_data_access;
+    assign  mem_data        =   MEM_RDATA;
+    assign  bus_stall       =   (MEM_READ || MEM_WRITE) && !MEM_READY;
+    assign  Stall           =   hazard_stall | bus_stall;
 
     //IF_ID register
     always @(posedge clk or negedge rst_n) begin
@@ -183,7 +206,7 @@ module rv32i_top(
             EX_MEM_imm          <= 32'b0;
             EX_MEM_LUI          <= 1'b0;
         end
-        else begin
+        else if(!bus_stall) begin
             EX_MEM_Mem_Read     <= ID_EX_Mem_Read;
             EX_MEM_Mem_Write    <= ID_EX_Mem_Write;
             EX_MEM_Mem_To_Reg   <= ID_EX_Mem_To_Reg;
@@ -212,7 +235,7 @@ module rv32i_top(
             MEM_WB_imm          <= 32'b0;
             MEM_WB_LUI          <= 1'b0;
         end
-        else begin
+        else if(!bus_stall) begin
             MEM_WB_rd           <= EX_MEM_rd;
             MEM_WB_Mem_To_Reg   <= EX_MEM_Mem_To_Reg;
             MEM_WB_ALU_result   <= EX_MEM_ALU_result;
@@ -253,12 +276,12 @@ module rv32i_top(
     Instruction_memory IM0 (.pc(pc), .Instruction(Instruction));
 
     //Data Memory
-    Data_memory DM0 (.clk(clk), .MemRead(EX_MEM_Mem_Read), .MemWrite(EX_MEM_Mem_Write), .addr(EX_MEM_ALU_result), .write_data(EX_MEM_rv2), .read_data(mem_data));
+    //Data_memory DM0 (.clk(clk), .MemRead(EX_MEM_Mem_Read), .MemWrite(EX_MEM_Mem_Write), .addr(EX_MEM_ALU_result), .write_data(EX_MEM_rv2), .read_data(mem_data));
 
     //Forwarding Unit
     Forwarding_unit FU0 (.ID_EX_rs1(ID_EX_rs1), .ID_EX_rs2(ID_EX_rs2), .EX_MEM_rd(EX_MEM_rd), .EX_MEM_RegWrite(EX_MEM_RegWrite), .MEM_WB_rd(MEM_WB_rd), .MEM_WB_RegWrite(MEM_WB_RegWrite), .ForwardA(ForwardA), .ForwardB(ForwardB));
 
     //Hazard Detection
-    Hazard_detection HD0 (.ID_EX_MemRead(ID_EX_Mem_Read), .ID_EX_rd(ID_EX_rd), .IF_ID_rs1(IF_ID_Instruction[19:15]), .IF_ID_rs2(IF_ID_Instruction[24:20]), .Stall(Stall), .Flush(ID_Flush));
+    Hazard_detection HD0 (.ID_EX_MemRead(ID_EX_Mem_Read), .ID_EX_rd(ID_EX_rd), .IF_ID_rs1(IF_ID_Instruction[19:15]), .IF_ID_rs2(IF_ID_Instruction[24:20]), .Stall(hazard_stall), .Flush(ID_Flush));
 
 endmodule

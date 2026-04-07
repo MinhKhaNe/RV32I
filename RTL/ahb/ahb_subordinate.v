@@ -14,7 +14,7 @@ module ahb_subordinate(
     input   wire    [2:0]   HBURST,
     input   wire            HMASTLOCK,
     input   wire            HREADY,
-    input   wire    [2:0]   HPROT,
+    input   wire    [3:0]   HPROT,
     //Transfer response
     output  wire            HREADYOUT,  //insert a single wait state
     output  wire            HRESP,      //WARINING 
@@ -40,6 +40,18 @@ module ahb_subordinate(
     reg             wait_state;
     reg     [31:0]  mask, HRDATA_mask;
     wire    [31:0]  mem_word;
+    wire            error_1, error_2, error_3, error_4, error_flag;
+    reg             error_flag_d, error_reg;
+    wire            protocol_error;
+
+    assign  error_1 = HSEL && HTRANS[1] && (HADDR[11:0] > 12'hFFF);
+    assign  error_2 = HSEL && HTRANS[1] && (((HSIZE == WORD) && (HADDR[1:0] != 2'b00)) || ((HSIZE == HALFWORD) && (HADDR[0] != 1'b0)));
+    //assign  error_3 = HSEL && HTRANS[1] && HWRITE && HADDR[11:8] == 4'h0 && HADDR[7:0] != 8'h0;
+    //assign  error_2 = 1'b0;
+    assign  error_3 = HSEL && HTRANS[1] && (HADDR < 32'h0000_0040) && (HPROT[1] == 1'b0);
+    assign  error_4 = HSEL && HTRANS[1] && (HSIZE > WORD);
+    assign  error_flag  = error_1 || error_2 || error_3 || error_4;
+    // assign  error_flag = 1'b0;
 
     //DELAY HWRITE 1 cycle
     always @(posedge HCLK or negedge HRESETn) begin
@@ -63,14 +75,40 @@ module ahb_subordinate(
         end
     end
 
+    // Logic điều khiển error_flag_d (Chu kỳ thứ 2)
+    always @(posedge HCLK or negedge HRESETn) begin
+        if (!HRESETn) begin
+            error_flag_d <= 1'b0;
+        end 
+        else if (error_reg) begin
+            error_flag_d <= 1'b1;
+        end 
+        else if (error_flag_d) begin
+            error_flag_d <= 1'b0;
+        end
+    end
+
+    always @(posedge HCLK or negedge HRESETn) begin
+        if (!HRESETn) begin
+            error_reg <= 1'b0;
+        end 
+        else if (error_flag) begin
+            error_reg <= 1'b1;
+        end 
+        else if (error_reg) begin
+            error_reg <= 1'b0;
+        end
+    end
     
     //Read data
     always @(posedge HCLK or negedge HRESETn) begin
         if(!HRESETn) begin
             HRDATA_reg  <= 32'b0;
         end
-        else if(!HWRITE && HREADY && HTRANS[1] && HSEL) begin
-            HRDATA_reg  <= HRDATA_mask;
+        else if(!error_reg) begin
+            if(!HWRITE && HREADY && HTRANS[1] && HSEL) begin
+                HRDATA_reg  <= HRDATA_mask;
+            end
         end
     end
 
@@ -131,8 +169,10 @@ module ahb_subordinate(
                 memory[i] <= 0;
             end
         end
-        else if(HWRITE_d && HREADY && HTRANS_d[1] && HSEL_d) begin
-            memory[HADDR_reg[11:2]] <= (mem_word & ~mask) | (HWDATA & mask);
+        else if(!error_reg) begin
+            if(HWRITE_d && HREADY && HTRANS_d[1] && HSEL_d) begin
+                memory[HADDR_reg[11:2]] <= (mem_word & ~mask) | (HWDATA & mask);
+            end
         end
     end
 
@@ -140,15 +180,18 @@ module ahb_subordinate(
         if(!HRESETn) begin
             wait_state  <= 1'b0;
         end
-        else if(HREADY && HSEL && HTRANS_d[1] && !wait_state) begin
+        else if(HREADY && HSEL && HTRANS_d[1] && !wait_state && !error_flag) begin
             wait_state  <= 1'b1;
         end
         else if (wait_state) begin
             wait_state  <= 1'b0;
         end
+        else if(error_flag_d) begin
+            wait_state  <= 1'b0;
+        end
     end
 
-    assign HREADYOUT    = ~wait_state;
-    assign HRESP        = (HSEL && HTRANS[1] && (HADDR[31:12] != 0)) ? 1'b1 : 1'b0; 
+    assign HRESP     = error_reg || error_flag_d;
+    assign HREADYOUT = (error_reg && !error_flag_d) ? 1'b0 : ~wait_state;
 
 endmodule
