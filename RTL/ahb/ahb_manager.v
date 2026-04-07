@@ -118,7 +118,7 @@ module ahb_manager(
         if(!HRESETn)
             HTRANS_reg <= IDLE;
         else begin
-        if (HRESP) begin
+            if (HRESP) begin
                 HTRANS_reg <= IDLE;
             end
             if (HREADY) begin
