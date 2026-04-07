@@ -106,7 +106,7 @@ module ahb_subordinate(
             HRDATA_reg  <= 32'b0;
         end
         else if(!error_reg) begin
-            if(!HWRITE && HREADY && HTRANS[1] && HSEL) begin
+            if(!HWRITE_d && HREADY_d && HTRANS_d[1] && HSEL_d) begin
                 HRDATA_reg  <= HRDATA_mask;
             end
         end
