@@ -4,7 +4,7 @@ VLIB = vlib
 VMAP = vmap
 
 WORK = work
-TOP  = tb_rv32i
+TOP  = tb_soc_timer_cpu
 
 RTL_F  = rtl.f
 TB_SRC = ../TB/$(TOP).sv

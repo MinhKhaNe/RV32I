@@ -1,11 +1,9 @@
-module ahb_subordinate(
+module ahb_subordinate_sram(
     //Global signals
     input   wire            HCLK,
     input   wire            HRESETn,
     //Select signal
     input   wire            HSEL,
-    //Data in
-    input   wire    [31:0]  HWDATA,
     //Address and control
     input   wire    [31:0]  HADDR,
     input   wire    [1:0]   HTRANS,     //00 idle, 01 BUSY, 10 NONSEQ, 11 SEQ
@@ -15,12 +13,20 @@ module ahb_subordinate(
     input   wire            HMASTLOCK,
     input   wire            HREADY,
     input   wire    [3:0]   HPROT,
+    input   wire    [31:0]  HWDATA,     //Data from CPU
+    //Data from SRAM
+    input   wire    [31:0]  SRAM_DATA,  //DAta from SRAM
     //Transfer response
     output  wire            HREADYOUT,  //insert a single wait state
     output  wire            HRESP,      //WARINING 
     output  wire            HEXOKAY,
     //Data out
-    output  reg     [31:0]  HRDATA
+    output  reg     [31:0]  HRDATA,
+    output  wire            hwr_en,
+    output  wire            hrd_en,
+    output  reg     [31:0]  data_to_sram,
+    output  wire    [31:0]  address_to_sram
+
 );
 
     parameter   BYTE        = 3'b000;
@@ -32,17 +38,18 @@ module ahb_subordinate(
 
     integer         i;
     //Internal Registers
-    reg     [31:0]  HRDATA_reg, HADDR_reg, HWDATA_reg;
+    reg     [31:0]  HRDATA_reg, HADDR_reg;
     reg             HWRITE_d, HSEL_d, HREADY_d;
     reg     [1:0]   HTRANS_d;
     reg     [2:0]   HSIZE_d;
-    reg     [31:0]  memory[0:1023];
     reg             wait_state;
     reg     [31:0]  mask, HRDATA_mask;
     wire    [31:0]  mem_word;
     wire            error_1, error_2, error_3, error_4, error_flag;
     reg             error_flag_d, error_reg;
     wire            protocol_error;
+    reg             sram_ready;
+    reg     [1:0]   delay_cnt; 
 
     assign  error_1 = HSEL && HTRANS[1] && (HADDR[11:0] > 12'hFFF);
     assign  error_2 = HSEL && HTRANS[1] && (((HSIZE == WORD) && (HADDR[1:0] != 2'b00)) || ((HSIZE == HALFWORD) && (HADDR[0] != 1'b0)));
@@ -52,6 +59,11 @@ module ahb_subordinate(
     assign  error_4 = HSEL && HTRANS[1] && (HSIZE > WORD);
     assign  error_flag  = error_1 || error_2 || error_3 || error_4;
     // assign  error_flag = 1'b0;
+    //SRAM signals
+    assign  hwr_en  = HWRITE_d && HREADY && HTRANS_d[1] && HSEL_d;
+    assign  hrd_en  = !HWRITE_d && HREADY && HTRANS_d[1] && HSEL_d;
+    
+    assign  address_to_sram = HADDR_reg;
 
     //DELAY HWRITE 1 cycle
     always @(posedge HCLK or negedge HRESETn) begin
@@ -62,7 +74,6 @@ module ahb_subordinate(
             HSEL_d      <= 1'b0;
             HSIZE_d     <= 3'b0;
             HREADY_d    <= 1'b0;
-            HWDATA_reg  <= 32'b0;
         end
         else if(HREADY) begin
             HWRITE_d    <= HWRITE;
@@ -71,7 +82,6 @@ module ahb_subordinate(
             HSEL_d      <= HSEL;
             HSIZE_d     <= HSIZE;
             HREADY_d    <= HREADY;
-            HWDATA_reg  <= HWDATA;
         end
     end
 
@@ -105,10 +115,8 @@ module ahb_subordinate(
         if(!HRESETn) begin
             HRDATA_reg  <= 32'b0;
         end
-        else if(!error_reg) begin
-            if(!HWRITE_d && HREADY_d && HTRANS_d[1] && HSEL_d) begin
+        else if(!error_reg && HREADY) begin
                 HRDATA_reg  <= HRDATA_mask;
-            end
         end
     end
 
@@ -133,7 +141,8 @@ module ahb_subordinate(
         endcase
     end
 
-    assign  HRDATA  = HRDATA_reg;
+    assign  mem_word    = SRAM_DATA;
+    assign  HRDATA      = (!error_reg && HREADY) ? HRDATA_mask : 32'b0;
     // assign HRDATA = (!HWRITE_d && HSEL_d && HTRANS_d[1]) ? HRDATA_mask : 32'h0;
 
     always @(*) begin
@@ -161,17 +170,13 @@ module ahb_subordinate(
         endcase
     end
 
-    assign  mem_word    = memory[HADDR[11:2]];
-
-    always @(posedge HCLK or negedge HRESETn) begin
+     always @(posedge HCLK or negedge HRESETn) begin
         if(!HRESETn) begin
-            for(i = 0; i < 1024; i = i + 1) begin
-                memory[i] <= 0;
-            end
+            data_to_sram <= 32'b0;
         end
         else if(!error_reg) begin
             if(HWRITE_d && HREADY && HTRANS_d[1] && HSEL_d) begin
-                memory[HADDR_reg[11:2]] <= (mem_word & ~mask) | (HWDATA & mask);
+                data_to_sram <= (mem_word & ~mask) | (HWDATA & mask);
             end
         end
     end
@@ -191,7 +196,27 @@ module ahb_subordinate(
         end
     end
 
-    assign HRESP     = error_reg || error_flag_d;
-    assign HREADYOUT = (error_reg && !error_flag_d) ? 1'b0 : ~wait_state;
+    // Sử dụng delay_cnt để quản lý trạng thái chờ tự động
+    always @(posedge HCLK or negedge HRESETn) begin
+        if (!HRESETn) begin
+            delay_cnt <= 2'b0;
+        end 
+        else begin
+            if (HREADYOUT && HSEL_d && HTRANS_d[1] && !error_flag) begin
+                if (!HWRITE) begin
+                    delay_cnt <= 2'd2; 
+                end
+                else begin
+                    delay_cnt <= 2'd1;
+                end
+            end
+            else if (delay_cnt > 0) begin
+                delay_cnt <= delay_cnt - 1'b1;
+            end
+        end 
+    end
 
+    assign HREADYOUT = (error_reg && !error_flag_d) ? 1'b0 : (delay_cnt == 2'b0);
+    assign HRESP     = error_reg || error_flag_d;
+    assign HEXOKAY   = 1'b1;
 endmodule

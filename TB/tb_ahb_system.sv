@@ -39,23 +39,23 @@ module tb_ahb_system();
     );
 
     task ahb_write(input [31:0] addr, input [31:0] data);
-begin
-    @(posedge HCLK);
-    while(!cpu_ready) @(posedge HCLK);
+    begin
+        @(posedge HCLK);
+        while(!cpu_ready) @(posedge HCLK);
 
-    cpu_addr      = addr;
-    cpu_wdata     = data;
-    cpu_write_req = 1;
-    cpu_valid     = 1;
+        cpu_addr      = addr;
+        cpu_wdata     = data;
+        cpu_write_req = 1;
+        cpu_valid     = 1;
 
-    @(posedge HCLK);
-    while(!cpu_ready) @(posedge HCLK); 
-    // Không hạ cpu_valid ngay, hoặc đảm bảo Manager vẫn giữ HWDATA
-    cpu_valid     = 0; 
-    
-    repeat(2) @(posedge HCLK); // Chờ thêm để Slave kịp ghi
-end
-endtask
+        @(posedge HCLK);
+        while(!cpu_ready) @(posedge HCLK); 
+        // Không hạ cpu_valid ngay, hoặc đảm bảo Manager vẫn giữ HWDATA
+        cpu_valid     = 0; 
+        
+        repeat(2) @(posedge HCLK); // Chờ thêm để Slave kịp ghi
+    end
+    endtask
 
     // always @(posedge HCLK) begin
     //     $display("[%0t] STATE=?, HTRANS=%b HADDR=%h",
@@ -67,32 +67,10 @@ endtask
     //         $display("[%0t] MEM WRITE: addr=%h data=%h",
     //             $time,
     //             h_addr,
-    //             dut.u_slave.memory[h_addr[11:2]]
+    //             dut.u_slave_sram.memory[h_addr[11:2]]
     //         );
     //     end
     // end
-
-    task ahb_read(input [31:0] addr);
-    begin
-        @(posedge HCLK);
-        while(!cpu_ready) @(posedge HCLK);
-
-        cpu_addr      = addr;
-        cpu_write_req = 0;
-        cpu_valid     = 1;
-        cpu_burst     = 3'b000;
-        cpu_size      = 3'b010;
-
-        @(posedge HCLK);
-        while(!cpu_ready) @(posedge HCLK); 
-
-        cpu_valid     = 0;
-
-        wait(!cpu_ready);
-        $display("\n[%0t] ===== READ addr=%h data=%h =====\n",
-            $time, addr, cpu_rdata);
-    end
-    endtask
 
     task ahb_write_incr4(
         input [31:0] start_addr, 
@@ -268,7 +246,7 @@ endtask
         cpu_valid <= 0; // BUSY
         $display("[%0t] >>> INSERT BUSY", $time);
 
-        force dut.u_slave.HREADYOUT = 0;
+        force dut.u_slave_sram.HREADYOUT = 0;
 
         repeat(2) @(posedge HCLK);
 
@@ -280,7 +258,7 @@ endtask
 
         repeat(2) @(posedge HCLK);
 
-        release dut.u_slave.HREADYOUT;
+        release dut.u_slave_sram.HREADYOUT;
         $display("[%0t] >>> RELEASE HREADY", $time);
 
         @(posedge HCLK); 
@@ -326,8 +304,8 @@ endtask
             while(!cpu_ready) @(posedge HCLK);
             cpu_wdata <= 32'h2222_2222;
 
-            force dut.u_slave.HRESP     = 1'b1;
-            force dut.u_slave.HREADYOUT = 1'b0;
+            force dut.u_slave_sram.HRESP     = 1'b1;
+            force dut.u_slave_sram.HREADYOUT = 1'b0;
             $display("[%0t] >>> SLAVE INSERTS ERROR (Cycle 1: HREADY=0)", $time);
             
             cpu_addr <= 32'h0000_4000; // Địa chỉ mới CPU muốn nhảy tới sau lỗi
@@ -335,12 +313,12 @@ endtask
 
             @(posedge HCLK);
             
-            force dut.u_slave.HREADYOUT = 1'b1;
+            force dut.u_slave_sram.HREADYOUT = 1'b1;
             $display("[%0t] >>> SLAVE INSERTS ERROR (Cycle 2: HREADY=1)", $time);
             
             @(posedge HCLK);
-            release dut.u_slave.HRESP;
-            release dut.u_slave.HREADYOUT;
+            release dut.u_slave_sram.HRESP;
+            release dut.u_slave_sram.HREADYOUT;
 
             if (dut.u_manager.HTRANS == 2'b00) 
                 $display("[%0t] SUCCESS: Manager returned to IDLE after ERROR", $time);
@@ -370,7 +348,7 @@ endtask
             
             @(posedge HCLK);
             #1; // Đợi logic tổ hợp cập nhật
-            if (dut.u_slave.error_2) 
+            if (dut.u_slave_sram.error_2) 
                 $display("[%0t] SUCCESS: error_2 (Misalignment) detected!", $time);
             else 
                 $display("[%0t] FAILED: error_2 not detected!", $time);
@@ -385,12 +363,12 @@ endtask
             cpu_addr      <= 32'h0000_0020;
             cpu_size      <= 3'b010;
             // Giả sử bạn có biến cpu_prot nối với HPROT
-            // Nếu không có, bạn cần force: force dut.u_slave.HPROT = 4'b0000;
+            // Nếu không có, bạn cần force: force dut.u_slave_sram.HPROT = 4'b0000;
             cpu_valid     <= 1;
 
             @(posedge HCLK);
             #1;
-            if (dut.u_slave.error_3)
+            if (dut.u_slave_sram.error_3)
                 $display("[%0t] SUCCESS: error_3 (Protection) detected!", $time);
             else
                 $display("[%0t] FAILED: error_3 not detected!", $time);
@@ -407,7 +385,7 @@ endtask
 
             @(posedge HCLK);
             #1;
-            if (dut.u_slave.error_4)
+            if (dut.u_slave_sram.error_4)
                 $display("[%0t] SUCCESS: error_4 (Size) detected!", $time);
             else
                 $display("[%0t] FAILED: error_4 not detected!", $time);
@@ -419,6 +397,40 @@ endtask
             $display("--- ERROR FLAG DETECTION TEST DONE ---\n");
         end
     endtask
+
+    task ahb_read(input [31:0] addr);
+        begin
+            @(posedge HCLK);
+            while(!cpu_ready) @(posedge HCLK);
+
+            cpu_addr      = addr;
+            cpu_write_req = 0;
+            cpu_valid     = 1;
+            cpu_burst     = 3'b000;
+            cpu_size      = 3'b010;
+
+            @(posedge HCLK);
+            while(!cpu_ready) @(posedge HCLK); 
+
+            cpu_valid     = 0;
+
+            wait(!cpu_ready);
+            $display("\n[%0t] ===== READ addr=%h data=%h =====\n",
+                $time, addr, cpu_rdata);
+        end
+    endtask
+
+    always @(posedge HCLK) begin
+        #1;
+        $display("[%0t] TRANS=%b WRITE=%b READY=%b ADDR=%h RDATA=%h",
+            $time,
+            dut.h_trans,
+            dut.h_write,
+            dut.h_ready,
+            dut.h_addr,
+            dut.CPU_RDATA
+        );
+    end
 
     initial begin
         HRESETn = 0; 

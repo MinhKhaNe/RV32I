@@ -48,7 +48,7 @@ module ram_top #(
         end
     endfunction
 
-    parameter   SAURIA_MEM_ADDR_MASK    = 32'h0000_0000;
+    parameter   MEM_ADDR_MASK           = 32'hFFF8_0000;
     parameter   SRAMA_OFFSET            = 32'h0000_0000;
     parameter   SRAMB_OFFSET            = 32'h0008_0000;
     parameter   SRAMC_OFFSET            = 32'h000C_0000;
@@ -77,7 +77,7 @@ module ram_top #(
     reg     [SRAMC_W-1:0]       sramc_out_r;
 
     //Check value of Address 
-    assign  host_sram_sel   = haddr & SAURIA_MEM_ADDR_MASK; //Only take value from [21:18]
+    assign  host_sram_sel   = haddr & MEM_ADDR_MASK; //Only take value from [21:18]
     //Check SRAMA read, write signals
     assign  host_srama_wr   = (host_sram_sel == SRAMA_OFFSET) ? hwr_en : 1'b0;
     assign  host_srama_rd   = (host_sram_sel == SRAMA_OFFSET) ? hrd_en : 1'b0;

@@ -5,7 +5,12 @@ module tb_rv32i;
 reg clk;
 reg rst_n;
 
-//instantiate CPU
+wire MEM_READY;
+wire [31:0] MEM_RDATA;
+
+assign MEM_READY = 1'b1;
+assign MEM_RDATA = 32'b0;
+
 rv32i_top DUT (
     .clk(clk),
     .rst_n(rst_n)
@@ -25,7 +30,7 @@ initial begin
     rst_n = 1;
 
     //run program
-    #1000;
+    #5000;
 
     $finish;
 end
