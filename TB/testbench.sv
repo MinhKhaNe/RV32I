@@ -16,6 +16,9 @@ module testbench;
         .address(dut_if.cpu_addr)
     );
 
+    assign  dut_if.timer_interrupt  = dut.ahb.timer.tim_int;
+    assign  dut_if.sram_data        = dut.ahb.sram.sramc_out_r;
+
     initial begin
         dut_if.clk = 0;
         forever #25 dut_if.clk = ~dut_if.clk;
@@ -52,7 +55,7 @@ module testbench;
 
     initial begin
 
-        #2000;
+        #15000;
 
         $display("[TB] TIMEOUT");
 
