@@ -1,7 +1,11 @@
 m255
 K4
 z2
-!s99 nomlopt
+Z0 !s99 nomlopt
+R0
+R0
+R0
+R0
 !s11f vlog 2021.2_1 2021.05, May 15 2021
 13
 !s112 1.1
@@ -9,776 +13,898 @@ z2
 !i10e 25
 !i10f 100
 cModel Technology
-Z0 d/home/nguyenminhkha/Desktop/RV32I/RV32I-main/SIM
+Z1 d/home/nguyenminhkha/Desktop/RV32I/RV32I-main/SIM
 T_opt
-!s110 1777942897
-V5DHe3DJ=>5`bXDR<lkPj=1
-04 16 4 work tb_soc_timer_cpu fast 0
-=1-7c214ac8dcb4-69f94171-2c437-15f5
+!s11d test_pkg /home/nguyenminhkha/Desktop/RV32I/RV32I-main/SIM/work 1 dut_interface 1 /home/nguyenminhkha/Desktop/RV32I/RV32I-main/SIM/work 
+!s11d soc_packet /home/nguyenminhkha/Desktop/RV32I/RV32I-main/SIM/work 1 dut_interface 1 /home/nguyenminhkha/Desktop/RV32I/RV32I-main/SIM/work 
+!s110 1778223195
+VljJ1fc_W=VWz59EOkkH>92
+04 9 4 work testbench fast 0
+=1-7c214ac8dcb4-69fd885b-41956-2353
 !s124 OEM100
-o-quiet -auto_acc_if_foreign -work work +acc
-Z1 tCvgOpt 0
+o-quiet -auto_acc_if_foreign -work work -debugdb +acc
+Z2 tCvgOpt 0
 n@_opt
 OL;O;2021.2_1;73
 vahb_decoder
-Z2 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
-Z3 !s110 1777942895
+Z3 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
+Z4 !s110 1778223192
 !i10b 1
 !s100 m`@G;RL6NAm`9D7H[Z3jA0
-Io8HMIP]`W`VRZ;6HL2GN42
+I2Q9@oTOej2o1n1zbHi5ZQ3
 S1
-R0
+R1
 w1777878127
 8../RTL/ahb/ahb_decoder.v
 F../RTL/ahb/ahb_decoder.v
-!i122 0
+!i122 4
 L0 1 38
-Z4 VDg1SIo80bB@j0V0VzS_@n1
-Z5 OL;L;2021.2_1;73
+Z5 VDg1SIo80bB@j0V0VzS_@n1
+Z6 OL;L;2021.2_1;73
 r1
 !s85 0
 31
-Z6 !s108 1777942895.000000
-Z7 !s107 ../TB/tb_soc_timer_cpu.sv|../RTL/timer/cnt_ctrl.v|../RTL/timer/register_module.v|../RTL/timer/timer_top.v|../RTL/apb/apb_slave_wait_state.v|../RTL/SRAM/ram_top.v|../RTL/SRAM/ram_wrapper.v|../RTL/SRAM/ram_inferred.v|../RTL/ahb/ahb_multiplexor.v|../RTL/ahb/ahb_subordinate.v|../RTL/ahb/ahb_subordinate_sram.v|../RTL/ahb/ahb_manager.v|../RTL/ahb/ahb_decoder.v|../RTL/ahb/ahb_subordinate_timer.v|../RTL/ahb/ahb_top.v|../RTL/rv32i/Register_file.v|../RTL/rv32i/Instruction_memory.v|../RTL/rv32i/Hazard_detection.v|../RTL/rv32i/Forwarding_unit.v|../RTL/rv32i/ALU.v|../RTL/rv32i/Sign_extend.v|../RTL/rv32i/rv32_old.v|../RTL/rv32i/ALU_control.v|../RTL/rv32i/rv32i_top.v|../RTL/rv32i/Branch_prediction.v|../RTL/rv32i/Immediate_generator.v|../RTL/rv32i/Data_memory.v|../RTL/rv32i/PC.v|../RTL/rv32i/Control_unit.v|../RTL/soc_top.v|
-Z8 !s90 -sv|-f|rtl.f|../TB/tb_soc_timer_cpu.sv|
+Z7 !s108 1778223192.000000
+Z8 !s107 ../testcases/sram_test.sv|../testcases/timer_test.sv|../testcases/base_test.sv|../TB/environment.sv|../TB/scoreboard.sv|../TB/monitor.sv|../TB/packet.sv|../TB/testbench.sv|../testcases/test_pkg.sv|../TB/soc_packet.sv|../TB/dut_interface.sv|../RTL/timer/cnt_ctrl.v|../RTL/timer/register_module.v|../RTL/timer/timer_top.v|../RTL/apb/apb_slave_wait_state.v|../RTL/SRAM/ram_top.v|../RTL/SRAM/ram_wrapper.v|../RTL/SRAM/ram_inferred.v|../RTL/ahb/ahb_multiplexor.v|../RTL/ahb/ahb_subordinate.v|../RTL/ahb/ahb_subordinate_sram.v|../RTL/ahb/ahb_manager.v|../RTL/ahb/ahb_decoder.v|../RTL/ahb/ahb_subordinate_timer.v|../RTL/ahb/ahb_top.v|../RTL/rv32i/Register_file.v|../RTL/rv32i/Instruction_memory.v|../RTL/rv32i/Hazard_detection.v|../RTL/rv32i/Forwarding_unit.v|../RTL/rv32i/ALU.v|../RTL/rv32i/Sign_extend.v|../RTL/rv32i/rv32_old.v|../RTL/rv32i/ALU_control.v|../RTL/rv32i/rv32i_top.v|../RTL/rv32i/Branch_prediction.v|../RTL/rv32i/Immediate_generator.v|../RTL/rv32i/Data_memory.v|../RTL/rv32i/PC.v|../RTL/rv32i/Control_unit.v|../RTL/soc_top.v|
+Z9 !s90 -coveropt|3|+cover=bcestf|-sv|-f|compile.f|
 !i113 0
-Z9 o-sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
-Z10 !s92 -sv +incdir+../RTL +incdir+../RTL/rv32i +incdir+../RTL/ahb +incdir+../RTL/SRAM +incdir+../RTL/apb +incdir+../RTL/timer -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
-R1
-vahb_manager
+Z10 !s102 -coveropt 3 +cover=bcestf
+Z11 o-coveropt 3 +cover=bcestf -sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z12 !s92 -coveropt 3 +cover=bcestf -sv +incdir+../RTL +incdir+../RTL/rv32i +incdir+../RTL/ahb +incdir+../RTL/SRAM +incdir+../RTL/apb +incdir+../RTL/timer +incdir+../TB +incdir+../testcases -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
 R2
+vahb_manager
 R3
+R4
 !i10b 1
 !s100 4e`3acOXjWoX0N<1b`e;61
-IChKW5Y[i=7F:JJ7LNnL5N0
+IE8MfFWHE?RVXgROhML;z]0
 S1
-R0
-w1775464442
+R1
+w1777964868
 8../RTL/ahb/ahb_manager.v
 F../RTL/ahb/ahb_manager.v
-!i122 0
+!i122 4
 L0 1 269
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vahb_multiplexor
+R11
+R12
 R2
+vahb_multiplexor
 R3
+R4
 !i10b 1
 !s100 h4D>KaP1;Y83^j2H<TEg01
-IhUHg?4QT4K=Ek9IWlMmn?1
+ITmWkb4OmI>HBF_?MzN42J1
 S1
-R0
+R1
 w1777866737
 8../RTL/ahb/ahb_multiplexor.v
 F../RTL/ahb/ahb_multiplexor.v
-!i122 0
+!i122 4
 L0 1 37
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vahb_subordinate
+R11
+R12
 R2
+vahb_subordinate
 R3
+R4
 !i10b 1
 !s100 Szd2]jE<28_fll87dO9JZ1
-I0MJe:@bcac6I600B9@HIN0
+ICF=lTSaD;4=@<VYUA0oWI0
 S1
-R0
+R1
 w1775528755
 8../RTL/ahb/ahb_subordinate.v
 F../RTL/ahb/ahb_subordinate.v
-!i122 0
+!i122 4
 L0 1 197
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vahb_subordinate_sram
+R11
+R12
 R2
+vahb_subordinate_sram
 R3
+R4
 !i10b 1
 !s100 eY68g9T0Q9dCRzdBM1[cd1
-I]RLHUDWceAMDC0i3gF@^P1
+IHSiZcn@bjYD[hX59Y93eN3
 S1
-R0
-w1775728418
+R1
+w1777954616
 8../RTL/ahb/ahb_subordinate_sram.v
 F../RTL/ahb/ahb_subordinate_sram.v
-!i122 0
+!i122 4
 L0 1 222
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vahb_subordinate_timer
+R11
+R12
 R2
+vahb_subordinate_timer
 R3
+R4
 !i10b 1
 !s100 _XVDFf2LH;Z=m<<JE:hZh1
-IHCW[V`4nI8=;@RiOm3HDj1
+IA_Pm;6nz>_1`F:VGH=e[80
 S1
-R0
+R1
 w1777903068
 8../RTL/ahb/ahb_subordinate_timer.v
 F../RTL/ahb/ahb_subordinate_timer.v
-!i122 0
+!i122 4
 L0 1 191
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vahb_top
+R11
+R12
 R2
+vahb_top
 R3
+R4
 !i10b 1
-!s100 a5o588jUAPG[Rll=K3Y;D0
-I2`8Qk?6OlAJ=DeP[ABmNb2
+!s100 ?^WZZUfQ>PZVJ0MnFX]Yn3
+IJG=mSz`S2=chiU4QC1^[o3
 S1
-R0
-w1777881420
+R1
+w1777973898
 8../RTL/ahb/ahb_top.v
 F../RTL/ahb/ahb_top.v
-!i122 0
-L0 1 289
-R4
+!i122 4
+L0 1 309
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vALU
+R11
+R12
 R2
+vALU
 R3
+R4
 !i10b 1
 !s100 =hjKJXLTohZlTkZU3R:Wh0
-IdG`QBSoa;2iV:U;Ykm3SO3
+IKACQ_L>G5[g`=zOkY70fK2
 S1
-R0
-Z11 w1773817745
+R1
+Z13 w1773817745
 8../RTL/rv32i/ALU.v
 F../RTL/rv32i/ALU.v
-!i122 0
+!i122 4
 L0 1 33
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2
 n@a@l@u
 vALU_control
-R2
 R3
+R4
 !i10b 1
 !s100 iCmIJQEfRFo?Z5Ng8Gnfn1
-IE@QHcM]=W^]kSmadh4hR[0
+IBYYa:l4Q`E7SXORSJgzXg2
 S1
-R0
-R11
+R1
+R13
 8../RTL/rv32i/ALU_control.v
 F../RTL/rv32i/ALU_control.v
-!i122 0
+!i122 4
 L0 1 30
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2
 n@a@l@u_control
 vapb_slave_wait_state
-R2
 R3
+R4
 !i10b 1
 !s100 JRF2njSf0JbaL<N?kkNN83
-ITzYKNTKQMXGfQIUgNlbLl0
+IP9V8n@=1bgJRO2E<aShiT0
 S1
-R0
+R1
 w1777862426
 8../RTL/apb/apb_slave_wait_state.v
 F../RTL/apb/apb_slave_wait_state.v
-!i122 0
+!i122 4
 L0 1 61
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vBranch_prediction
+R11
+R12
 R2
+vBranch_prediction
 R3
+R4
 !i10b 1
 !s100 Pn;=;hM^TPX4n_W@nD0752
-I3jQQm_MUk=^>HUhK0aKge1
+I4;AYYBTTHVN7LjfzlZ=0U1
 S1
-R0
-R11
+R1
+R13
 8../RTL/rv32i/Branch_prediction.v
 F../RTL/rv32i/Branch_prediction.v
-!i122 0
+!i122 4
 L0 1 21
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2
 n@branch_prediction
 vcnt_ctrl
-R2
 R3
+R4
 !i10b 1
 !s100 S:>EPJz8@>fzAn[`fPMXI3
-IGgKhHf5iIR9N;YlcA<^df0
+ICEb6684[AVYI`@UK4]NcD2
 S1
-R0
+R1
 w1777862429
 8../RTL/timer/cnt_ctrl.v
 F../RTL/timer/cnt_ctrl.v
-!i122 0
+!i122 4
 L0 1 35
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vControl_unit
+R11
+R12
 R2
+vControl_unit
 R3
+R4
 !i10b 1
 !s100 Ld[azA?CSW;D31IL>zd@70
-Imk?m?Sd=7dX20@j@b4Y[f0
+Igd1XZmGd6?K;Kh]e@UPA51
 S1
-R0
-R11
+R1
+R13
 8../RTL/rv32i/Control_unit.v
 F../RTL/rv32i/Control_unit.v
-!i122 0
+!i122 4
 L0 1 95
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2
 n@control_unit
 vData_memory
-R2
 R3
+R4
 !i10b 1
 !s100 PfVfemb0i^CedncFzaLA<3
-Ib0G>^P9X4:VHS8_fTTSWO0
+I?f8j3;DA<>ijb[8VWf[`g3
 S1
-R0
-R11
+R1
+R13
 8../RTL/rv32i/Data_memory.v
 F../RTL/rv32i/Data_memory.v
-!i122 0
+!i122 4
 L0 1 32
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-n@data_memory
-vForwarding_unit
+R11
+R12
 R2
+n@data_memory
+Ydut_interface
 R3
+R4
+!i10b 1
+!s100 ]aSWAg8If2R[VPPE@[[cP2
+IDKOAHPTSd^dFN07CJ[TUK1
+S1
+R1
+w1778205879
+8../TB/dut_interface.sv
+F../TB/dut_interface.sv
+!i122 4
+Z14 L0 1 0
+R5
+R6
+r1
+!s85 0
+31
+R7
+R8
+R9
+!i113 0
+R10
+R11
+R12
+R2
+vForwarding_unit
+R3
+R4
 !i10b 1
 !s100 HCeX`_g`[dF3Xj7BgaW5b0
-IG290F4MHkm8YnRY]<URNM3
+Ih?CELWn8BT5OL;=:FRa?22
 S1
-R0
-R11
+R1
+w1778126024
 8../RTL/rv32i/Forwarding_unit.v
 F../RTL/rv32i/Forwarding_unit.v
-!i122 0
-Z12 L0 1 39
-R4
+!i122 4
+Z15 L0 1 39
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2
 n@forwarding_unit
 vHazard_detection
-R2
 R3
+R4
 !i10b 1
 !s100 ;AHoW72H:aV1^^gZLgnB]0
-Ik0=`O:FazD?eN;jaM;T7N2
+IMioR?KzY:Sc`J?HSgkH8j0
 S1
-R0
-R11
+R1
+R13
 8../RTL/rv32i/Hazard_detection.v
 F../RTL/rv32i/Hazard_detection.v
-!i122 0
+!i122 4
 L0 1 22
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2
 n@hazard_detection
 vImmediate_generator
-R2
 R3
+R4
 !i10b 1
 !s100 Mb0h7<?`06McL[ig>eJ^]2
-IgB?448C2C:D7EJ@k:7M173
+I4<kA0MWWVF;DEi>]04HMe2
 S1
-R0
-R11
+R1
+R13
 8../RTL/rv32i/Immediate_generator.v
 F../RTL/rv32i/Immediate_generator.v
-!i122 0
-Z13 L0 1 24
-R4
+!i122 4
+Z16 L0 1 24
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2
 n@immediate_generator
 vInstruction_memory
-R2
 R3
+R4
 !i10b 1
-!s100 i4?R6SkI]z34A9Ffe?EfE0
-I9B88AYeicA^>ei>]abaQG1
+!s100 LRhZ81?CkbV1[g[kO5YFN1
+I3<4@kl^lm6S^6W:<kWi=J1
 S1
-R0
-w1777902168
+R1
+w1778222764
 8../RTL/rv32i/Instruction_memory.v
 F../RTL/rv32i/Instruction_memory.v
-!i122 0
-L0 1 188
-R4
+!i122 4
+L0 1 117
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2
 n@instruction_memory
 vPC
-R2
 R3
+R4
 !i10b 1
 !s100 U3[f[GJfoCahLQOlE[4gi3
-IVoPDJ469jTB8@TA2>f7CG0
+IlDFU9hEceHFkWceYlc^[o0
 S1
-R0
-w1777341848
+R1
+w1777947053
 8../RTL/rv32i/PC.v
 F../RTL/rv32i/PC.v
-!i122 0
+!i122 4
 L0 1 46
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2
 n@p@c
 vram_inferred
-R2
 R3
+R4
 !i10b 1
 !s100 aJ^?1iU_Z:Cm2aT5cQT3W2
-IW0^?VX?HYSnaXMI8Xo3a:3
+I<2ZQ[nOfN1>;QeSQXzhWL1
 S1
-R0
+R1
 w1775547741
 8../RTL/SRAM/ram_inferred.v
 F../RTL/SRAM/ram_inferred.v
-!i122 0
+!i122 4
 L0 1 41
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vram_top
+R11
+R12
 R2
+vram_top
 R3
+R4
 !i10b 1
 !s100 Vz8OQX]UzcEWb49`9B<630
-I5[Xf@i<kP^E=R^lk2]?SX3
+IM=M:gS:E>oO;[lL7;nQiX0
 S1
-R0
+R1
 w1777861864
 8../RTL/SRAM/ram_top.v
 F../RTL/SRAM/ram_top.v
-!i122 0
+!i122 4
 L0 1 203
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vram_wrapper
+R11
+R12
 R2
+vram_wrapper
 R3
+R4
 !i10b 1
-!s100 oDJ;hmYda?;gX;IG`V83a2
-IfSedh]cT>4]E]5V;iTd;53
+!s100 B_MZNT?14G7FmnBQQkNYI3
+IP_b@HnPhzKI7BMnSP0:jH0
 S1
-R0
-w1775547738
+R1
+w1777973413
 8../RTL/SRAM/ram_wrapper.v
 F../RTL/SRAM/ram_wrapper.v
-!i122 0
+!i122 4
 L0 3 233
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vRegister_file
+R11
+R12
 R2
+vRegister_file
 R3
+R4
 !i10b 1
 !s100 Tc@0?4d]iZ6d34BWOaE:Y0
-ICYVLV0>=zWd5NJ8[lf^CE2
+Ij0XagQ:cI`]nONhETz2[B0
 S1
-R0
+R1
 w1776307364
 8../RTL/rv32i/Register_file.v
 F../RTL/rv32i/Register_file.v
-!i122 0
-R12
-R4
+!i122 4
+R15
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2
 n@register_file
 vregister_module
-R2
 R3
+R4
 !i10b 1
 !s100 ogPbMk>f[:70N:>L2EB6C1
-I`_[EcECfYI[JLmY]dhJlD2
+IBNFCPR:BSTM5_dK8a;A5E1
 S1
-R0
+R1
 w1777862432
 8../RTL/timer/register_module.v
 F../RTL/timer/register_module.v
-!i122 0
+!i122 4
 L0 1 310
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vrv32_old
+R11
+R12
 R2
+vrv32_old
 R3
+R4
 !i10b 1
 !s100 O10Bc9X]5Fd1GGNY6Dl;70
-IWA3L1135[6S^T1So4@0ZX0
+I7l?R8gKQa53MKDz@2YLg:0
 S1
-R0
+R1
 w1776407593
 8../RTL/rv32i/rv32_old.v
 F../RTL/rv32i/rv32_old.v
-!i122 0
+!i122 4
 L0 1 342
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vrv32i_top
+R11
+R12
 R2
+vrv32i_top
 R3
+R4
 !i10b 1
-!s100 ]9P<81lYVH961LHXE9i7O3
-IX=n73CUOnJ?b9h5a;=IJY0
+!s100 OTG_j6LQ6RVF?80aZ2MSG3
+IaAO;Lbd_60M`XZVL^U[FS3
 S1
-R0
-w1777902793
+R1
+w1777965180
 8../RTL/rv32i/rv32i_top.v
 F../RTL/rv32i/rv32i_top.v
-!i122 0
-L0 1 360
-R4
+!i122 4
+L0 1 382
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vSign_extend
+R11
+R12
 R2
+vSign_extend
 R3
+R4
 !i10b 1
 !s100 eMETUc8EL?DGdIbz8d0RL2
-I0ZzCjg?O6:MV2[L[zRXSR1
+IMLa^8B91[Z]<ZzdF3Skg60
 S1
-R0
-R11
+R1
+R13
 8../RTL/rv32i/Sign_extend.v
 F../RTL/rv32i/Sign_extend.v
-!i122 0
-R13
-R4
+!i122 4
+R16
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-n@sign_extend
-vsoc_top
+R11
+R12
 R2
+n@sign_extend
+Xsoc_packet
+Z17 !s115 dut_interface
 R3
+R4
 !i10b 1
-!s100 @ke5zJUm1FR8Q_<GOZA3d1
-IRfa08`TVBoQ@lc07KK0bi0
+!s100 TcF:HAij@SeW05R=eieHI0
+ICbK3Ydl1LRKVz687f4Si03
 S1
-R0
-w1777902738
+R1
+w1778222329
+8../TB/soc_packet.sv
+F../TB/soc_packet.sv
+F../TB/packet.sv
+F../TB/monitor.sv
+F../TB/scoreboard.sv
+F../TB/environment.sv
+!i122 4
+R14
+VCbK3Ydl1LRKVz687f4Si03
+R6
+r1
+!s85 0
+31
+R7
+R8
+R9
+!i113 0
+R10
+R11
+R12
+R2
+vsoc_top
+R3
+R4
+!i10b 1
+!s100 2]nOzbihN<C?jDQ^O:Nig3
+I8W12Y9RKl?50SRMFVKIB40
+S1
+R1
+w1778205858
 8../RTL/soc_top.v
 F../RTL/soc_top.v
-!i122 0
-L0 1 40
-R4
+!i122 4
+L0 1 67
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vtb_soc_timer_cpu
+R11
+R12
 R2
+Xtest_pkg
+R17
 R3
+Z18 DXx4 work 10 soc_packet 0 22 CbK3Ydl1LRKVz687f4Si03
+R4
 !i10b 1
-!s100 V1oOV0N1XkmO5X5]EJ^Cf3
-InSSzb@TAGiXEcb1UmSUPM3
+!s100 NTFXL:_1iSG>00:6^k[JY2
+IU70U^P7F]9cf;J;Y1;j:z2
 S1
-R0
-w1777901476
-8../TB/tb_soc_timer_cpu.sv
-F../TB/tb_soc_timer_cpu.sv
-!i122 0
-L0 3 74
-R4
-R5
+R1
+w1778222524
+8../testcases/test_pkg.sv
+F../testcases/test_pkg.sv
+F../testcases/base_test.sv
+F../testcases/timer_test.sv
+F../testcases/sram_test.sv
+!i122 4
+R14
+VU70U^P7F]9cf;J;Y1;j:z2
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
-vtimer_top
+R11
+R12
 R2
+vtestbench
 R3
+R18
+DXx4 work 8 test_pkg 0 22 U70U^P7F]9cf;J;Y1;j:z2
+R4
+!i10b 1
+!s100 6@ZT[ehJ3jZhBGBZZFfAI2
+INhG`2l_N>@:MbB6DdG9Dl0
+S1
+R1
+w1778223185
+8../TB/testbench.sv
+F../TB/testbench.sv
+!i122 4
+L0 1 63
+R5
+R6
+r1
+!s85 0
+31
+R7
+R8
+R9
+!i113 0
+R10
+R11
+R12
+R2
+vtimer_top
+R3
+R4
 !i10b 1
 !s100 mnnjLI701D0[OhUc2:O>X1
-I<SG^O>l5:4Yczl_LT?eo@3
+IkbHTH3OQGC4OaP]4]Z0b]1
 S1
-R0
+R1
 w1777862435
 8../RTL/timer/timer_top.v
 F../RTL/timer/timer_top.v
-!i122 0
+!i122 4
 L0 1 83
-R4
 R5
+R6
 r1
 !s85 0
 31
-R6
 R7
 R8
-!i113 0
 R9
+!i113 0
 R10
-R1
+R11
+R12
+R2

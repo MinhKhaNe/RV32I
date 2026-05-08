@@ -1,0 +1,45 @@
+QuestaSim-64 vlog 2021.2_1 Compiler 2021.05 May 15 2021
+Start time: 13:53:12 on May 08,2026
+vlog -coveropt 3 "+cover=bcestf" -sv -f compile.f 
+-- Compiling module soc_top
+-- Compiling module Control_unit
+-- Compiling module PC
+-- Compiling module Data_memory
+-- Compiling module Immediate_generator
+-- Compiling module Branch_prediction
+-- Compiling module rv32i_top
+-- Compiling module ALU_control
+-- Compiling module rv32_old
+-- Compiling module Sign_extend
+-- Compiling module ALU
+-- Compiling module Forwarding_unit
+-- Compiling module Hazard_detection
+-- Compiling module Instruction_memory
+-- Compiling module Register_file
+-- Compiling module ahb_top
+-- Compiling module ahb_subordinate_timer
+-- Compiling module ahb_decoder
+-- Compiling module ahb_manager
+-- Compiling module ahb_subordinate_sram
+-- Compiling module ahb_subordinate
+-- Compiling module ahb_multiplexor
+-- Compiling module ram_inferred
+-- Compiling module ram_wrapper
+-- Compiling module ram_top
+-- Compiling module apb_slave_wait_state
+-- Compiling module timer_top
+-- Compiling module register_module
+-- Compiling module cnt_ctrl
+-- Compiling interface dut_interface
+-- Compiling package soc_packet
+-- Compiling package test_pkg
+-- Importing package soc_packet
+-- Compiling module testbench
+-- Importing package test_pkg
+
+Top level modules:
+	rv32_old
+	ahb_subordinate
+	testbench
+End time: 13:53:12 on May 08,2026, Elapsed time: 0:00:00
+Errors: 0, Warnings: 0

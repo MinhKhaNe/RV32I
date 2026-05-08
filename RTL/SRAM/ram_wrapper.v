@@ -101,7 +101,7 @@ module ram_wrapper #(
         if(!rst_n) begin
             acc_word_value_shim     <= {ACC_WORD_L{1'b0}};
         end
-        else if(ard_en) begin
+        else begin
             acc_word_value_shim     <= acc_word_value;   //Delay 1 cycle
         end
     end

@@ -2,6 +2,12 @@ module ahb_top(
     input   wire            HCLK,
     input   wire            HRESETn,
 
+    input   wire    [63:0]  trace_out,
+    input   wire    [31:0]  trace_ptr,
+    input   wire            trace_we,
+
+    input   wire    [2:0]   sram_sel,
+
     input   wire    [31:0]  CPU_WDATA,
     input   wire    [31:0]  CPU_ADDR,
     input   wire            CPU_WRITE_REQ,
@@ -13,7 +19,8 @@ module ahb_top(
     input   wire    [3:0]   CPU_HPROT,
 
     output  wire    [31:0]  CPU_RDATA,
-    output  wire            CPU_READY 
+    output  wire            CPU_READY,
+    output  wire    [127:0] sramc_out
 );
 
     wire    [31:0]  hrdata_sram;
@@ -48,6 +55,11 @@ module ahb_top(
     wire            tim_int;
     reg             hsel_sram_reg;
     reg             hsel_timer_reg;
+    reg             rd_en_d;
+
+    always @(posedge HCLK) begin
+        rd_en_d <= !trace_we;
+    end
 
     always @(posedge HCLK or negedge HRESETn) begin
         if (!HRESETn) begin
@@ -73,6 +85,14 @@ module ahb_top(
             hrd_en_d    <= hrd_en;
         end 
     end
+
+    wire [31:0] muxed_addr;
+    wire [31:0] muxed_wdata;
+    wire        muxed_write_req;
+
+    assign muxed_write_req = trace_we ? 1'b1  : CPU_WRITE_REQ;
+    assign muxed_addr      = trace_we ? trace_ptr : CPU_ADDR;
+    assign muxed_wdata     = trace_we ? trace_out : CPU_WDATA;
 
     ahb_manager u_manager (
         .HCLK           (HCLK),
@@ -109,11 +129,11 @@ module ahb_top(
         .HSIZE          (h_size),
         .HBURST         (h_burst),
         .HMASTLOCK      (h_mastlock),
-        .HREADY         (hready_sram),   
+        .HREADY         (h_ready),   
         .HPROT          (h_prot),
         .HWDATA         (h_wdata),
         .SRAM_DATA      (ram_rdata),
-        .HREADYOUT      (h_ready),    
+        .HREADYOUT      (hready_sram),    
         .HRESP          (hresp_sram),
         .HEXOKAY        (),
         .HRDATA         (hrdata_sram),
@@ -136,7 +156,7 @@ module ahb_top(
     ) sram (
         .clk        (HCLK),
         .rst_n      (HRESETn),
-        .sram_sel   (3'b100), 
+        .sram_sel   (sram_sel), 
 
         .hdata      (data_to_sram),
         .haddr      (address_reg),
@@ -153,12 +173,12 @@ module ahb_top(
         .sramb_rd_en(1'b0),
         .sramb_data (),
 
-        .sramc_data_in (128'd0),
-        .sramc_addr    (10'd0),
-        .sramc_rd_en   (1'b0),
-        .sramc_wr_en   (1'b0),
-        .sramc_wmask   (8'd0),
-        .sramc_data    ()
+        .sramc_data_in ({64'b0, trace_out}),
+        .sramc_addr    (trace_ptr[11:2]),
+        .sramc_rd_en   (!trace_we),
+        .sramc_wr_en   (trace_we),
+        .sramc_wmask   (8'hFF),
+        .sramc_data    (sramc_out)
     );
 
     timer_top timer (

@@ -1,0 +1,108 @@
+# vsim -sv_seed 1 -coverage -coveranalysis -debugDB -l timer_test_1.log -voptargs="+acc" -assertdebug -c testbench -do "coverage save -codeAll -cvg -onexit timer_test.ucdb; log -r /*;run -all;" "+timer_test" 
+# Start time: 13:53:15 on May 08,2026
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# ** Note: (vsim-8611) Generating debug db.
+# //  Questa Sim-64
+# //  Version 2021.2_1 linux_x86_64 May 15 2021
+# //
+# //  Copyright 1991-2021 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.dut_interface(fast)
+# Loading work.soc_packet(fast)
+# Loading work.test_pkg(fast)
+# Loading work.testbench(fast)
+# Loading work.dut_interface(fast__2)
+# Loading work.soc_top(fast)
+# Loading work.ahb_top(fast)
+# Loading work.ahb_manager(fast)
+# Loading work.ahb_subordinate_sram(fast)
+# Loading work.ram_top(fast)
+# Loading work.ram_wrapper(fast)
+# Loading work.ram_inferred(fast)
+# Loading work.timer_top(fast)
+# Loading work.apb_slave_wait_state(fast)
+# Loading work.register_module(fast)
+# Loading work.cnt_ctrl(fast)
+# Loading work.ahb_subordinate_timer(fast)
+# Loading work.ahb_decoder(fast)
+# Loading work.ahb_multiplexor(fast)
+# Loading work.rv32i_top(fast)
+# Loading work.Register_file(fast)
+# Loading work.ALU(fast)
+# Loading work.Immediate_generator(fast)
+# Loading work.Sign_extend(fast)
+# Loading work.Control_unit(fast)
+# Loading work.ALU_control(fast)
+# Loading work.PC(fast)
+# Loading work.Branch_prediction(fast)
+# Loading work.Instruction_memory(fast)
+# Loading work.Data_memory(fast)
+# Loading work.Forwarding_unit(fast)
+# Loading work.Hazard_detection(fast)
+# ** Warning: (vsim-3015) [PCDPC] - Port size (32) does not match connection size (30) for port 'haddr'. The port definition is at: ../RTL/SRAM/ram_wrapper.v(16).
+#    Time: 0 ns  Iteration: 0  Instance: /testbench/dut/ahb/sram/srama File: ../RTL/SRAM/ram_top.v Line: 136
+# ** Warning: (vsim-3015) [PCDPC] - Port size (32) does not match connection size (30) for port 'haddr'. The port definition is at: ../RTL/SRAM/ram_wrapper.v(16).
+#    Time: 0 ns  Iteration: 0  Instance: /testbench/dut/ahb/sram/sramb File: ../RTL/SRAM/ram_top.v Line: 160
+# ** Warning: (vsim-3015) [PCDPC] - Port size (32) does not match connection size (30) for port 'haddr'. The port definition is at: ../RTL/SRAM/ram_wrapper.v(16).
+#    Time: 0 ns  Iteration: 0  Instance: /testbench/dut/ahb/sram/sramc File: ../RTL/SRAM/ram_top.v Line: 185
+# ** Note: (vsim-8900) Creating design debug database vsim.dbg.
+# coverage save -codeAll -cvg -onexit timer_test.ucdb
+#  log -r /*
+# run -all
+# [Testbench] Loading instruction file: timer.mem
+# [Environment] Environment is building
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: ffffff00, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00010004, Data: ffffff00
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: ffffffff, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00010008, Data: ffffffff
+# [Scoreboard] Get packet from Monitor, Address: 00010008, Data: ffffffff
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 0001000c, Data: ffffffff
+# [Scoreboard] Get packet from Monitor, Address: 0001000c, Data: ffffffff
+# [Scoreboard] Get packet from Monitor, Address: 0001000c, Data: ffffffff
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00010010, Data: ffffffff
+# [Scoreboard] Get packet from Monitor, Address: 00010010, Data: ffffffff
+# [Scoreboard] Get packet from Monitor, Address: 00010010, Data: ffffffff
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000001, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00010014, Data: 00000001
+# [Scoreboard] Get packet from Monitor, Address: 00010014, Data: 00000001
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00010000, Data: 00000001
+# [Scoreboard] Get packet from Monitor, Address: 00010000, Data: 00000001
+# [Scoreboard] Get packet from Monitor, Address: 00010000, Data: 00000001
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000064, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [Scoreboard] Get packet from Monitor, Address: 00000000, Data: 00000000
+# [TB] TIMEOUT
+# ** Note: $finish    : ../TB/testbench.sv(59)
+#    Time: 2 us  Iteration: 0  Instance: /testbench
+# Saving coverage database on exit...
+# End time: 13:53:16 on May 08,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 3

@@ -7,7 +7,11 @@ module rv32i_top(
     output  wire    [31:0]  cpu_addr,
     output  wire    [31:0]  cpu_wdata,
     output  wire            cpu_write_req,
-    output  wire            cpu_valid
+    output  wire            cpu_valid,
+
+    output  reg             trace_we,
+    output  reg     [63:0]  trace_out,
+    output  reg     [31:0]  trace_ptr
 );
 
     //================= Internal Signals =================//
@@ -78,8 +82,12 @@ module rv32i_top(
     reg         MEM_WB_Mem_To_Reg;
     reg [31:0]  MEM_WB_mem_data;
     reg [31:0]  MEM_WB_ALU_result;
-    reg [31:0]  trace_ptr;
+    reg [31:0]  MEM_WB_instruction, EX_MEM_Instruction, ID_EX_Instruction;
     wire        wb_valid;
+    wire        trace_busy;
+    reg [1:0]   trace_state;
+
+    assign trace_busy = (trace_state != 2'b00);
 
     assign wb_valid = MEM_WB_RegWrite && (MEM_WB_rd != 0);
 
@@ -114,10 +122,19 @@ module rv32i_top(
     assign cpu_valid     =  EX_MEM_Mem_Read | EX_MEM_Mem_Write;
 
     always @(posedge clk or negedge rst_n) begin
-        if(!rst_n)
+        if (!rst_n) begin
             trace_ptr <= 0;
-        else if(wb_valid)
-            trace_ptr <= trace_ptr + 4;
+            trace_we  <= 0;
+            trace_out <= 64'b0;
+        end else begin
+            if (wb_valid && bus_ready) begin
+                trace_we  <= 1'b1;
+                trace_out <= {MEM_WB_instruction, MEM_WB_ALU_result};
+                trace_ptr <= trace_ptr + 32'd8;
+            end else begin
+                trace_we  <= 1'b0;
+            end
+        end
     end
 
     //================= IF/ID =================//
@@ -158,6 +175,7 @@ module rv32i_top(
             ID_EX_LUI <= 0;
             ID_EX_funct7 <= 7'b0;
             ID_EX_RegWrite <= 0;
+            ID_EX_Instruction <= 32'b0;
         end
         else if (Stall || ID_Flush) begin
             ID_EX_RegWrite <= 0;
@@ -190,6 +208,7 @@ module rv32i_top(
             ID_EX_LUI <= LUI;
             ID_EX_funct7 <= IF_ID_Instruction[31:25];
             ID_EX_RegWrite <= RegWrite;
+            ID_EX_Instruction <= IF_ID_Instruction;
         end
     end
 
@@ -207,6 +226,7 @@ module rv32i_top(
             EX_MEM_imm <= 0;
             EX_MEM_Jump <= 0;
             EX_MEM_LUI <= 0;
+            EX_MEM_Instruction <= 32'b0;
         end
         else if (!Stall) begin
             EX_MEM_Mem_Read <= ID_EX_Mem_Read;
@@ -220,6 +240,7 @@ module rv32i_top(
             EX_MEM_imm <= ID_EX_imm;
             EX_MEM_Jump <= ID_EX_Jump;
             EX_MEM_LUI <= ID_EX_LUI;
+            EX_MEM_Instruction <= ID_EX_Instruction;
         end
     end
 
@@ -246,6 +267,7 @@ module rv32i_top(
             MEM_WB_imm <= EX_MEM_imm;
             MEM_WB_Jump <= EX_MEM_Jump;
             MEM_WB_LUI <= EX_MEM_LUI;
+            MEM_WB_instruction <= EX_MEM_Instruction;
         end
     end
 
