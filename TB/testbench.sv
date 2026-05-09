@@ -17,7 +17,9 @@ module testbench;
     );
 
     assign  dut_if.timer_interrupt  = dut.ahb.timer.tim_int;
-    assign  dut_if.sram_data        = dut.ahb.sram.sramc_out_r;
+    assign  dut_if.sram_data        = dut.ahb.sramc_out;
+    assign  dut_if.sram_wdata       = dut.ahb.trace_out;
+
 
     initial begin
         dut_if.clk = 0;
